@@ -80,7 +80,7 @@ async function getHTMLfromPuppeteerPage(browser, pageUrl, options) {
 
     await page.goto(pageUrl, Object.assign({waitUntil: 'networkidle0'}, options));
 
-    await page.waitForSelector("#data-loaded");
+    await page.waitForSelector("#data-loaded", {timeout: 120000});
 
     const html = await page.content();
 
