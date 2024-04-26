@@ -109,7 +109,7 @@ async function runPuppeteer(baseUrl, routes, dir, engine) {
       if (html) createNewHTMLPage(routes[i], html, dir);
       else return 0;
     } catch (err) {
-      throw new Error(`Error: Failed to process route "${routes[i]}"\nMessage: ${err}`);
+      console.log(`Error: Failed to process route "${routes[i]}"\nMessage: ${err}`);
     }
   }
 
