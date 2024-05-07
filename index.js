@@ -77,10 +77,19 @@ async function createNewHTMLPage(route, html, dir) {
 async function getHTMLfromPuppeteerPage(browser, pageUrl, options) {
   try {
     const page = await browser.newPage();
+    await page.setViewport({width: 1920, height: 1080, deviceScaleFactor: 1});
 
     await page.goto(pageUrl, Object.assign({waitUntil: 'networkidle0'}, options));
 
+    try {
+      await page.waitForSelector("#data-for-ssg", {timeout: 60000});
+    } catch(e) {
+      console.log("Waited for data to load for 1 minute, but it didn't load in time. Proceeding anyway.");
+    }
+
     const html = await page.content();
+
+    await page.close();
     if (!html) return 0;
 
     return html;
@@ -102,10 +111,10 @@ async function runPuppeteer(baseUrl, routes, dir, engine) {
     try {
       console.log(`Processing route "${routes[i]}"`);
       const html = await getHTMLfromPuppeteerPage(browser, `${baseUrl}${routes[i]}`, engine.gotoOptions);
-      if (html) createNewHTMLPage(routes[i], html, dir);
+      if (html) await createNewHTMLPage(routes[i], html, dir);
       else return 0;
     } catch (err) {
-      throw new Error(`Error: Failed to process route "${routes[i]}"\nMessage: ${err}`);
+      console.log(`Error: Failed to process route "${routes[i]}"\nMessage: ${err}`);
     }
   }
 
